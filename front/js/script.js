@@ -16,7 +16,7 @@ async function recupererproduits() {
 
             // Création des Elements (balises)
             let a = document.createElement('a');
-            a.setAttribute('href', '#');
+            a.setAttribute('href', 'product.html?id=' + donnees[i]._id);
             
             let article = document.createElement('article');
             
@@ -45,3 +45,5 @@ async function recupererproduits() {
 }
 
 recupererproduits();
+
+console.log(window.location.href);
