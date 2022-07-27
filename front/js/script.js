@@ -9,7 +9,7 @@ async function recupererproduits() {
         alert('Un problème est survenu !');
     } else {
         let donnees = await requete.json();
-        //console.log(donnees[0]);
+        console.log(donnees);
         for (let i = 0; i < donnees.length; i++) {
             console.log(donnees[i].name);
             let items = document.querySelector('#items');
@@ -45,5 +45,3 @@ async function recupererproduits() {
 }
 
 recupererproduits();
-
-console.log(window.location.href);
