@@ -41,7 +41,7 @@ recupererProduit();
 let produit = {
     'idProduit': id,
     'couleurProduit': "",
-    'quantiteProduit': ""
+    'quantiteProduit': "0"
 };
 produit['idProduit'] = id;
 
@@ -57,8 +57,8 @@ let quantite = document.querySelector('#quantity');
 
 quantite.addEventListener("input", function(e) {
     let quantiteChoisie = e.target.value;
-    let nbQuantiteChoisie = parseInt(quantiteChoisie);
-    produit['quantiteProduit'] = nbQuantiteChoisie;
+    //let nbQuantiteChoisie = parseInt(quantiteChoisie);
+    produit['quantiteProduit'] = quantiteChoisie;
     console.log(produit);
 });
 

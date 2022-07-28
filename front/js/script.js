@@ -9,9 +9,9 @@ async function recupererproduits() {
         alert('Un problème est survenu !');
     } else {
         let donnees = await requete.json();
-        console.log(donnees);
+        //console.log(donnees);
         for (let i = 0; i < donnees.length; i++) {
-            console.log(donnees[i].name);
+            //console.log(donnees[i].name);
             let items = document.querySelector('#items');
 
             // Création des Elements (balises)
