@@ -38,16 +38,20 @@ if (produits) {
 
     }
 
+    let virtualProducts = produits; // On copie le Storage dans un panier en attente 
+
     for (let i in produits) {
         fetch("http://localhost:3000/api/products/" + produits[i].idProduit)
         .then(response => response.json())
-        .then(donnees => {
+        .then(product => {
             /* --Remplissage du tableau récapitulatif-- */
-            let url = donnees.imageUrl;
-            let alt = donnees.altTxt;
-            let nom = donnees.name;
-            let prixProduit = donnees.price;
+            let url = product.imageUrl;
+            let alt = product.altTxt;
+            let nom = product.name;
+            let prixProduit = product.price;
             
+            virtualProducts[i].price = product.price;
+
             let img = document.querySelectorAll('.cart__item img')[i];
             //console.log(img);
             img.setAttribute('src', url);
@@ -74,22 +78,23 @@ if (produits) {
             inputElement.setAttribute('value', produits[i].quantiteProduit);
             settings.appendChild(inputElement);
             let input = document.querySelectorAll('.itemQuantity')[i];
-            console.log(input, i);
-            
+
+            totalPanier(virtualProducts);
 
             /* --Modification du panier--*/
             input.addEventListener('change', (e) => {
-                let quantiteRecap = e.target.value;
-                console.log(quantiteRecap);
+                let quantiteNouvelle = e.target.value;
+                console.log(quantiteNouvelle);
                 // console.log(e.target);
                 //let idRecap = e.target.closest('.cart__item').dataset.id;
                 //let couleurRecap = e.target.closest('.cart__item').dataset.color;
                 console.log(produits[i].quantiteProduit);
-                if (produits[i].quantiteProduit != quantiteRecap) {
-                    produits[i].quantiteProduit = quantiteRecap;
-                    localStorage.setItem("produit", JSON.stringify(produits));
-
-                }
+                
+                produits[i].quantiteProduit = quantiteNouvelle;
+                virtualProducts[i].quantiteProduit = quantiteNouvelle;
+                localStorage.setItem("produit", JSON.stringify(produits));
+                totalPanier(virtualProducts);
+                
             });
 
             /* ——Suppression produit—— */
@@ -104,9 +109,13 @@ if (produits) {
                     let produits = JSON.parse(localStorage.getItem("produit"));
                     produits = produits.filter(function (f) { 
                         return f != produits[i]
-                     })
+                    })
+                    virtualProducts = produits.filter(function (f) { 
+                        return f != produits[i]
+                    })
                     console.log(produits);
                     localStorage.setItem("produit", JSON.stringify(produits));
+                    totalPanier(virtualProducts);
                     //produits = JSON.parse(localStorage.getItem("produit"));
                     let cartItem = e.target.closest('.cart__item');
                     cartItem.remove();
@@ -116,21 +125,6 @@ if (produits) {
                     
             });
 
-            /* --Total-- */
-
-            if (i = 0) {
-                total = parseInt(input.value);
-                prix = total * donnees.price;
-            } else {
-                total += parseInt(input.value);
-                prix += (total * donnees.price);
-
-            }
-            let totalArticle = document.querySelector('#totalQuantity');
-            let totalPrix = document.querySelector('#totalPrice');
-            //console.log(totalArticle);
-            totalArticle.textContent = total;
-            totalPrix.textContent = prix;
 
 
         });
@@ -140,7 +134,34 @@ if (produits) {
     
 }
 
+/* --Totaux panier-- */
 
+function totalPanier(products) {
+    let prix = 0;
+    let articles = 0;
+    for ( let i in products) {
+        prix += products[i].price * products[i].quantiteProduit;
+        articles += parseInt(products[i].quantiteProduit);
+    }
+    let totalArticle = document.querySelector('#totalQuantity');
+    let totalPrix = document.querySelector('#totalPrice');
+    totalArticle.textContent = articles;
+    totalPrix.textContent = prix;
+}
+
+
+// if (i = 0) {
+//     total = parseInt(input.value);
+//     prix = total * donnees.price;
+// } else {
+//     total += parseInt(input.value);
+//     prix += (total * donnees.price);
+
+// }
+
+// //console.log(totalArticle);
+// totalArticle.textContent = total;
+// totalPrix.textContent = prix;
 
 
 
