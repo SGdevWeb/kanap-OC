@@ -1,9 +1,13 @@
-// On récupère l'url de la page
+// --On récupère l'url de la page--
+
 let urlDeLaPage = window.location.href;
 let url = new URL(urlDeLaPage);
 let id = url.searchParams.get("id"); // On isole l'id de l'adresse
 
 const urlApi = 'http://localhost:3000/api/products/' + id;
+
+
+// --requête--
 
 async function recupererProduit() {
     const requete = await fetch(urlApi, {
@@ -32,12 +36,15 @@ async function recupererProduit() {
             option.setAttribute('value', colors)
             document.querySelector('#colors').appendChild(option).textContent = colors;
         });
+        document.title = donnees.name;
     }
 }
 
 recupererProduit();
 
-// Création du tableau 
+
+// -- Création du tableau --
+
 let produit = {
     'idProduit': id,
     'couleurProduit': "",
@@ -62,9 +69,10 @@ quantite.addEventListener("input", function(e) {
     console.log(produit);
 });
 
-// Ajouter un produit dans le panier
-let a = document.querySelector("#addToCart");
 
+// --Ajouter un produit dans le panier--
+
+let a = document.querySelector("#addToCart");
 //let contenuStorage = JSON.parse(localStorage.getItem("produit"));
 
 a.addEventListener('click', () => {
@@ -115,113 +123,5 @@ a.addEventListener('click', () => {
                     contenuStorage = JSON.parse(localStorage.getItem("produit")));
             }
         }       
-    }
-
-        
-        // }
-        // for (let i = 0 ; i < contenuStorage.length ; i++) {
-        //     if(contenuStorage[i].couleurProduit != produit.couleurProduit) {
-        //         console.log("couleur différente");
-        //         console.log("ajouter une ligne au panier");
-        //     } else {
-        //         console.log("même couleur");
-        //         console.log("Ajouter quantité");
-        //     }
-        // }
-            
+    }        
 });
-
-
-
-
-
-// On teste l'id --> vrai / faux
-// Faux --> on s'arrete 
-// vrai --> on teste la couleur 
-// vrai --> on s'arrete 
-// faux --> on continue
-
-
-
-// if(contenuStorage[i].idProduit == produit.idProduit) { 
-//     console.log("meme id");
-//     contenuStorage[i].quantiteProduit += produit.quantiteProduit;
-//     console.log(contenuStorage[i].quantiteProduit);
-//     localStorage.setItem("produit", JSON.stringify(contenuStorage));
-//     console.log("contenuStorage : " + contenuStorage);
-//     contenuStorage = JSON.parse(localStorage.getItem("produit"));
-//     trouve = true;
-// }
-// if ( & 
-//     contenuStorage[i].idProduit == produit.idProduit) { // même id
-//     // On incrémente la quantité de contenuStorage 
-//     // contenuStorage.quantiteproduit =+ produit.qantiteProduit
-//     console.log("meme couleur");
-//     console.log(contenuStorage[i]);
-//     console.log(contenuStorage[i].quantiteProduit);
-//     console.log(produit.quantiteProduit);
-//     contenuStorage[i].quantiteProduit += produit.quantiteProduit;
-//     console.log(contenuStorage[i].quantiteProduit);
-//     localStorage.setItem("produit", JSON.stringify(contenuStorage));
-//     console.log("contenuStorage : " + contenuStorage);
-//     contenuStorage = JSON.parse(localStorage.getItem("produit"));
-//     trouve = true;
-//     console.log(trouve);
-// } else { // couleur différente
-//     console.log("Pas le meme id ou pas la meme couleur");
-//     console.log(contenuStorage);
-//     contenuStorage.push(produit);
-//     localStorage.setItem("produit", JSON.stringify(contenuStorage));
-//     contenuStorage = JSON.parse(localStorage.getItem("produit"));
-//     console.log("contenuStorage : " + contenuStorage);
-//     contenuStorage = JSON.parse(localStorage.getItem("produit"));
-//     trouve = true;
-// }
-
-
-
-
-
-
-
-
-// function set(contenu) {
-//     localStorage.setItem("produit",JSON.stringify(contenu));
-// }
-
-// function get() {
-//     console.log(produit);
-//     console.log(produit.idProduit);
-//     let contenuLocalStorage = localStorage.getItem("produit");
-//     if (contenuLocalStorage == null) {
-//         console.log("if");
-//         return [];
-//     } else {
-//         console.log("else");
-//         return JSON.parse(contenuLocalStorage);
-//     }
-// }
-
-// function ajouterAuPanier(produit) {
-//     let contenuLocalStorage = get();
-//     console.log(contenuLocalStorage);
-//     for (let i=0 ; i < contenuLocalStorage.length; i++) {
-//         if( contenuLocalStorage[i].idProduit != produit.idProduit) {
-//             console.log("id different")
-//             contenuLocalStorage.push(produit);
-//             set(contenuLocalStorage);
-//         } else if (contenuLocalStorage[i].idProduit == produit.idProduit) {
-//             console.log("meme id")
-//             if(contenuLocalStorage[i].couleurProduit != produit.couleurProduit) {
-//                 console.log("meme id mais couleur differente")
-//                 contenuLocalStorage.push(produit);
-//                 set(contenuLocalStorage);
-//             } else {
-//                 console.log("meme id, meme couleur")
-//                 contenuLocalStorage[i].quantiteProduit += produit.quantiteProduit
-//             }
-//         } 
-//     }
-// }
-
-

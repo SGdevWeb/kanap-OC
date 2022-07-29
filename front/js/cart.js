@@ -1,8 +1,13 @@
+/* --On récupère le panier dans le storage */
+
 let produits = JSON.parse(localStorage.getItem("produit"));
+//console.log(produits);
 
-console.log(produits);
 
+/* --Affichage du panier sur la page-- */
 if (produits) {
+    let total = 0;
+    let prix = 0;
     // Affiche un tableau récapitulatif uniquement si des produits sont présents dans le localStorage
     for (let i in produits) {
         // console.log(produits[i]);
@@ -12,7 +17,7 @@ if (produits) {
         let template = `
         <article class="cart__item" data-id="${produits[i].idProduit}" data-color="${produits[i].couleurProduit}">
             <div class="cart__item__img">
-                <img alt="">
+                <img>
             </div>
             <div class="cart__item__content">
                 <div class="cart__item__content__description">
@@ -37,11 +42,11 @@ if (produits) {
         fetch("http://localhost:3000/api/products/" + produits[i].idProduit)
         .then(response => response.json())
         .then(donnees => {
-            // Affichage du tableau récapitulatif
+            /* --Remplissage du tableau récapitulatif-- */
             let url = donnees.imageUrl;
             let alt = donnees.altTxt;
             let nom = donnees.name;
-            let prix = donnees.price;
+            let prixProduit = donnees.price;
             
             let img = document.querySelectorAll('.cart__item img')[i];
             //console.log(img);
@@ -54,24 +59,25 @@ if (produits) {
 
             let descriptionP = document.querySelectorAll('.cart__item__content__description')[i];
             descriptionP.appendChild(document.createElement('p')).textContent = produits[i].couleurProduit;
-            descriptionP.appendChild(document.createElement('p')).textContent = prix + " €";
+            descriptionP.appendChild(document.createElement('p')).textContent = prixProduit + " €";
 
             let settings = document.querySelectorAll('.cart__item__content__settings__quantity')[i];
             settings.appendChild(document.createElement('p')).textContent = "Qté : ";
             let p = document.querySelector('.cart__item__content__settings__quantity p');
-            console.log(p);
             p.setAttribute('class', 'quantity');
             let inputElement = document.createElement('input');
-            settings.appendChild(inputElement).setAttribute('class', 'itemQuantity');
+            inputElement.className = "itemQuantity";
+            inputElement.setAttribute('type', 'number');
+            inputElement.setAttribute('name', 'itemQuantity');
+            inputElement.setAttribute('min', '1');
+            inputElement.setAttribute('max', '100');
+            inputElement.setAttribute('value', produits[i].quantiteProduit);
+            settings.appendChild(inputElement);
             let input = document.querySelectorAll('.itemQuantity')[i];
-            console.log(input);
-            input.setAttribute('type', 'number');
-            input.setAttribute('name', 'itemQuantity');
-            input.setAttribute('min', '1');
-            input.setAttribute('max', '100');
-            input.setAttribute('value', produits[i].quantiteProduit);
+            console.log(input, i);
+            
 
-            // Modification du panier
+            /* --Modification du panier--*/
             input.addEventListener('change', (e) => {
                 let quantiteRecap = e.target.value;
                 console.log(quantiteRecap);
@@ -82,17 +88,18 @@ if (produits) {
                 if (produits[i].quantiteProduit != quantiteRecap) {
                     produits[i].quantiteProduit = quantiteRecap;
                     localStorage.setItem("produit", JSON.stringify(produits));
+
                 }
             });
 
-            // Suppression produit
+            /* ——Suppression produit—— */
             let boutonSupprimer = document.querySelectorAll('.deleteItem')[i];
-            console.log(boutonSupprimer);
+
             boutonSupprimer.addEventListener('click', (e) => {
                 console.log(JSON.parse(localStorage.getItem("produit")));
-                if(confirm("Etes-vous sûr de vouloir supprimer ce produit de votre panier ?")) {
-                    alert("Produit supprimé du panier");
-                    let id = e.target.closest('.cart__item').dataset.id;
+                if (confirm("Etes-vous sûr de vouloir supprimer ce produit de votre panier ?")) {
+                    
+                    //let id = e.target.closest('.cart__item').dataset.id;
                     console.log(JSON.parse(localStorage.getItem("produit")));
                     let produits = JSON.parse(localStorage.getItem("produit"));
                     produits = produits.filter(function (f) { 
@@ -103,33 +110,37 @@ if (produits) {
                     //produits = JSON.parse(localStorage.getItem("produit"));
                     let cartItem = e.target.closest('.cart__item');
                     cartItem.remove();
+                    alert("Produit supprimé du panier");
+
                     }
                     
-                });
-            
-            
+            });
+
+            /* --Total-- */
+
+            if (i = 0) {
+                total = parseInt(input.value);
+                prix = total * donnees.price;
+            } else {
+                total += parseInt(input.value);
+                prix += (total * donnees.price);
+
+            }
+            let totalArticle = document.querySelector('#totalQuantity');
+            let totalPrix = document.querySelector('#totalPrice');
+            //console.log(totalArticle);
+            totalArticle.textContent = total;
+            totalPrix.textContent = prix;
+
+
         });
+
     }
+
+    
 }
 
 
-// let idPanier = document.querySelector('.cart__item').dataset.id;
-
-// let urlId = "http://localhost:3000/api/products/" + idPanier
-
-// console.log(document.querySelectorAll('.cart__item')[0]);
-// console.log(idPanier);
-
-// recupererproduits();
-
-// ** Modification et suppression du panier **
-
-
-
-// document.querySelector('.itemQuantity').addEventListener('change', (e) => {
-//     let quantite = e.target.value;
-//     console.log(quantite);
-// })
 
 
 
