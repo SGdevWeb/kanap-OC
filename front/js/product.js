@@ -64,7 +64,7 @@ let quantite = document.querySelector('#quantity');
 
 quantite.addEventListener("input", function(e) {
     let quantiteChoisie = e.target.value;
-    produit['quantiteProduit'] = quantiteChoisie;
+    produit['quantiteProduit'] = parseInt(quantiteChoisie);
     console.log(produit);
 });
 

@@ -1,10 +1,10 @@
 /* --On récupère le panier dans le storage */
 
 let produits = JSON.parse(localStorage.getItem("produit"));
-//console.log(produits);
+console.log(produits);
+let virtualProducts = JSON.parse(localStorage.getItem("produit"));
 
-
-/* --Affichage du panier sur la page-- */
+/* -- Affichage du panier sur la page -- */
 if (produits) {
     let total = 0;
     let prix = 0;
@@ -38,7 +38,7 @@ if (produits) {
 
     }
 
-    let virtualProducts = produits; // On copie le Storage dans un panier en attente 
+    //let virtualProducts = produits; // On copie le Storage dans un panier en attente 
 
     for (let i in produits) {
         fetch("http://localhost:3000/api/products/" + produits[i].idProduit)
@@ -90,9 +90,9 @@ if (produits) {
                 //let couleurRecap = e.target.closest('.cart__item').dataset.color;
                 console.log(produits[i].quantiteProduit);
                 
-                produits[i].quantiteProduit = quantiteNouvelle;
-                virtualProducts[i].quantiteProduit = quantiteNouvelle;
+                produits[i].quantiteProduit = parseInt(quantiteNouvelle);
                 localStorage.setItem("produit", JSON.stringify(produits));
+                virtualProducts[i].quantiteProduit = parseInt(quantiteNouvelle);
                 totalPanier(virtualProducts);
                 
             });
@@ -121,18 +121,18 @@ if (produits) {
                     cartItem.remove();
                     alert("Produit supprimé du panier");
 
-                    }
+                }
                     
             });
-
-
 
         });
 
     }
 
-    
-}
+} 
+// else {
+//     document.querySelector('#cartAndFormContainer h1').textContent = "Panier vide";
+// }
 
 /* --Totaux panier-- */
 
@@ -141,7 +141,7 @@ function totalPanier(products) {
     let articles = 0;
     for ( let i in products) {
         prix += products[i].price * products[i].quantiteProduit;
-        articles += parseInt(products[i].quantiteProduit);
+        articles += products[i].quantiteProduit;
     }
     let totalArticle = document.querySelector('#totalQuantity');
     let totalPrix = document.querySelector('#totalPrice');
@@ -149,19 +149,169 @@ function totalPanier(products) {
     totalPrix.textContent = prix;
 }
 
+/***** Gestion du formulaire *****/
 
-// if (i = 0) {
-//     total = parseInt(input.value);
-//     prix = total * donnees.price;
-// } else {
-//     total += parseInt(input.value);
-//     prix += (total * donnees.price);
-
+// class Contact {
+//     constructor() {
+//         this.firstName = document.querySelector('#firstName').value;
+//         this.lastName = document.querySelector('#lastName').value;
+//         this.address = document.querySelector('#address').value;
+//         this.city = document.querySelector('#city').value;
+//         this.email = document.querySelector('#email').value;
+//     }
 // }
 
-// //console.log(totalArticle);
-// totalArticle.textContent = total;
-// totalPrix.textContent = prix;
+//let contact = new Contact;
 
+// Récupération du formulaire saisie par l'utilisateur
 
+let contact = {
+    firstName: '',
+    lastName: '',
+    address: '',
+    city: '',
+    email: ''
+}
 
+let prenom = document.querySelector('#firstName');
+let nom = document.querySelector('#lastName');
+let adresse = document.querySelector('#address');
+let ville = document.querySelector('#city');
+let email = document.querySelector('#email');
+
+let prenomMessage = document.getElementById('firstNameErrorMsg');
+let nomMessage = document.getElementById('lastNameErrorMsg');
+let adresseMessage = document.getElementById('addressErrorMsg');
+let villeMessage = document.getElementById('cityErrorMsg');
+let emailMessage = document.getElementById('emailErrorMsg');
+
+// function ecoute(cible) {
+//     cible.addEventListener('input', (e) => {
+//         let valeurSaisie = e.target.value;
+//         contact.firstName = valeurSaisie;
+//     })
+// }
+
+function validationEmail(valueInput) {
+    if ((/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(valueInput)) {
+        return true
+    } else {
+        return false
+    }
+}
+
+prenom.addEventListener('input', (e) => {
+    let valeurSaisie = e.target.value;
+    console.log(valeurSaisie);
+    if (valeurSaisie.match(/^[a-zA-Z]{3,20}$/g)) {
+        console.log("match");
+        prenomMessage.textContent = '';
+    } else {
+        console.log("pas bon");
+        prenomMessage.textContent = "Merci de saisir un prénom entre 3 et 20 caractères";
+    }
+    contact.firstName = valeurSaisie;
+});
+
+nom.addEventListener('input', (e) => {
+    let valeurSaisie = e.target.value;
+    console.log(valeurSaisie);
+    if (valeurSaisie.match(/^[a-zA-Z]{3,20}$/g)) {
+        console.log("match");
+        nomMessage.textContent = '';
+    } else {
+        console.log("pas bon");
+        nomMessage.textContent = "Merci de saisir un nom entre 3 et 20 caractères";
+    }
+    contact.lastName = valeurSaisie;
+});
+
+adresse.addEventListener('input', (e) => {
+    let valeurSaisie = e.target.value;
+    console.log(valeurSaisie);
+    if (valeurSaisie.match(/^[a-zA-Z0-9\s,.'-]{3,}$/)) {
+        console.log("match");
+        adresseMessage.textContent = '';
+    } else {
+        console.log("pas bon");
+        adresseMessage.textContent = "Merci de saisir une adresse entre 3 et 60 caractères";
+    }
+    contact.address = valeurSaisie;
+});
+
+ville.addEventListener('input', (e) => {
+    let valeurSaisie = e.target.value;
+    console.log(valeurSaisie);
+    if (valeurSaisie.match(/^[a-zA-Z-]{3,20}$/g)) {
+        console.log("match");
+        villeMessage.textContent = '';
+    } else {
+        console.log("pas bon");
+        villeMessage.textContent = "Merci de saisir une ville entre 3 et 20 caractères";
+    }
+    contact.city = valeurSaisie;
+});
+
+email.addEventListener('input', (e) => {
+    let valeurSaisie = e.target.value;
+    contact.email = valeurSaisie;
+    validationEmail(valeurSaisie);
+    console.log(validationEmail(valeurSaisie));
+    if (validationEmail(valeurSaisie)) {
+        console.log("le mail est correct");
+        emailMessage.textContent = '';
+    } else {
+        console.log("pas bon");
+        emailMessage.textContent = "Merci de saisir une adresse mail valide";
+    }
+    contact.email = valeurSaisie;
+});
+
+// Récupération des produits dans le panier
+
+let products = [];
+
+for (let i in produits) {
+    products.push(produits[i].idProduit);
+    console.log(products);
+}
+
+/* -- Envoi du formulaire --*/
+
+let boutonCommander = document.querySelector('#order');
+
+boutonCommander.addEventListener('click', (e) => {
+
+    e.preventDefault;
+    let formulaire = document.querySelector('.cart__order__form');
+    formulaire.setAttribute('method', 'post');
+
+    if (prenomMessage.textContent == '' &
+        nomMessage.textContent == '' &
+        adresseMessage.textContent == '' &
+        villeMessage.textContent == '' &
+        emailMessage.textContent == '') {
+
+        //const products = ['8906dfda133f4c20a9d0e34f18adcf06'];
+        //console.log(products);
+
+        console.log(JSON.stringify({contact, products}));
+
+        fetch("http://localhost:3000/api/products/order", {
+        method: 'POST',
+        headers: {
+        "Accept": 'application/json',
+        "Content-Type": 'application/json',
+        },
+        body: JSON.stringify({contact, products})
+        })
+        .then(response => response.json())
+        .then(data => {
+            let orderId = data.orderId;
+            //console.log(orderId);
+            window.location = 'confirmation.html?orderId=' + orderId;
+        });
+    } else {
+            alert("Un champs du formulaire n'est pas valide")
+    }
+});
