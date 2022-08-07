@@ -1,4 +1,4 @@
-/* -- On récupère l'url de la page -- */
+/* -- Récupération de l'url de la page -- */
 
 let urlDeLaPage = window.location.href;
 let url = new URL(urlDeLaPage);
@@ -7,7 +7,7 @@ let id = url.searchParams.get("id"); // On isole l'id de l'adresse
 const urlApi = 'http://localhost:3000/api/products/' + id;
 
 
-/* -- requête -- */
+/* -- Requête pour récupérer sur l'API les données des produits de la page -- */
 
 async function recupererProduit() {
     const requete = await fetch(urlApi, {
@@ -76,55 +76,61 @@ let a = document.querySelector("#addToCart");
 
 a.addEventListener('click', () => {
     console.log("ecoute");
-    // get();
-    // ajouterAuPanier(produit);
-
-    let contenuStorage = JSON.parse(localStorage.getItem("produit"));
-
+    // On vérifie que la couleur est saisie par l'utilisateur
+    if (produit.couleurProduit == "") {
+        alert("Merci de saisir une couleur")
+    }
+    // On vérifie que la quantité saisie par l'utilisateur n'est pas 0
     if (produit.quantiteProduit == 0) {
         alert("La quantité doit être comprise entre 1 et 100");
+    }
+    // On lit le contenu du LocalStorage
+    let contenuStorage = JSON.parse(localStorage.getItem("produit"));
+
+    if (contenuStorage == null) {
+        contenuStorage = []; // On crée un tableau vide si le contenu est vide = pas de panier
+    }
+    
+    if (contenuStorage.length == 0) { // On ajoute le produit au panier si panier vide
+        //console.log("rien dans le panier");
+        contenuStorage.push(produit);
+        localStorage.setItem("produit", JSON.stringify(contenuStorage));
+        contenuStorage = JSON.parse(localStorage.getItem("produit"));
     } else {
-        if (contenuStorage == null) {
-            //console.log("rien dans le panier");
-            contenuStorage = [];
-            contenuStorage.push(produit);
-            localStorage.setItem("produit", JSON.stringify(contenuStorage));
-            contenuStorage = JSON.parse(localStorage.getItem("produit"));
-        } else {
-            console.log("quelque chose dans le panier");
-            for (let i = 0 ; i < contenuStorage.length ; i++) {
-                if(contenuStorage[i].idProduit == produit.idProduit
-                & contenuStorage[i].couleurProduit == produit.couleurProduit) {
-                    return (
-                    console.log("même id même couleur"),
-                    console.log("Ajouter quantité"),
-                    contenuStorage[i].quantiteProduit += produit.quantiteProduit,
-                    localStorage.setItem("produit", JSON.stringify(contenuStorage)),
-                    contenuStorage = JSON.parse(localStorage.getItem("produit")));
-                }
-            } 
-            for (let i = 0 ; i < contenuStorage.length ; i++) {
-                if(contenuStorage[i].idProduit == produit.idProduit & 
-                contenuStorage[i].couleurProduit != produit.couleurProduit) {
-                    return (
-                    console.log("même id et couleur différente"),
+        console.log("quelque chose dans le panier");
+        for (let i = 0 ; i < contenuStorage.length ; i++) {
+            if(contenuStorage[i].idProduit == produit.idProduit
+            & contenuStorage[i].couleurProduit == produit.couleurProduit) {
+                return (
+                console.log("même id même couleur"),
+                console.log("Ajouter quantité"),
+                contenuStorage[i].quantiteProduit += produit.quantiteProduit,
+                localStorage.setItem("produit", JSON.stringify(contenuStorage)),
+                contenuStorage = JSON.parse(localStorage.getItem("produit")));
+            }
+        } 
+        for (let i = 0 ; i < contenuStorage.length ; i++) {
+            if(contenuStorage[i].idProduit == produit.idProduit & 
+            contenuStorage[i].couleurProduit != produit.couleurProduit) {
+                return (
+                console.log("même id et couleur différente"),
+                console.log("Ajouter une ligne au panier"),
+                contenuStorage.push(produit),
+                localStorage.setItem("produit", JSON.stringify(contenuStorage)),
+                contenuStorage = JSON.parse(localStorage.getItem("produit")),
+                console.log(i));
+            }
+        }  
+        for (let i = 0; i < contenuStorage.length; i++) {
+            if(contenuStorage[i].idProduit != produit.idProduit) {
+                return (
+                    console.log("id différent"),
                     console.log("Ajouter une ligne au panier"),
                     contenuStorage.push(produit),
                     localStorage.setItem("produit", JSON.stringify(contenuStorage)),
-                    contenuStorage = JSON.parse(localStorage.getItem("produit")),
-                    console.log(i));
-                }
-            }  
-            for (let i = 0; i < contenuStorage.length; i++) {
-                if(contenuStorage[i].idProduit != produit.idProduit) {
-                    return (
-                        console.log("id différent"),
-                        console.log("Ajouter une ligne au panier"),
-                        contenuStorage.push(produit),
-                        localStorage.setItem("produit", JSON.stringify(contenuStorage)),
-                        contenuStorage = JSON.parse(localStorage.getItem("produit")));
-                }
-            }       
-        } 
-    }       
+                    contenuStorage = JSON.parse(localStorage.getItem("produit")));
+            }
+        }       
+    } 
+           
 });

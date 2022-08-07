@@ -38,6 +38,7 @@ if (produits) {
 
     }
 
+    panierVide();
     //let virtualProducts = produits; // On copie le Storage dans un panier en attente 
 
     for (let i in produits) {
@@ -107,32 +108,35 @@ if (produits) {
                     //let id = e.target.closest('.cart__item').dataset.id;
                     console.log(JSON.parse(localStorage.getItem("produit")));
                     let produits = JSON.parse(localStorage.getItem("produit"));
-                    produits = produits.filter(function (f) { 
-                        return f != produits[i]
+                    produits = produits.filter(function (produit) { 
+                        return produit != produits[i]
                     })
-                    virtualProducts = produits.filter(function (f) { 
-                        return f != produits[i]
+                    virtualProducts = produits.filter(function (produit) { 
+                        return produit != produits[i]
                     })
-                    console.log(produits);
+                    //console.log(produits);
                     localStorage.setItem("produit", JSON.stringify(produits));
                     totalPanier(virtualProducts);
                     //produits = JSON.parse(localStorage.getItem("produit"));
                     let cartItem = e.target.closest('.cart__item');
                     cartItem.remove();
-                    alert("Produit supprimé du panier");
-
-                }
-                    
+                    panierVide();
+                    setTimeout("alert('Produit supprimé du panier')", 500);
+                }       
             });
-
         });
 
     }
 
-} 
-// else {
-//     document.querySelector('#cartAndFormContainer h1').textContent = "Panier vide";
-// }
+} else {
+    document.querySelector('#cartAndFormContainer h1').textContent = "Panier vide";
+}
+
+function panierVide() {
+    if (document.querySelector('.cart__item') == null) {
+        document.querySelector('#cartAndFormContainer h1').textContent = "Panier vide";
+    }
+}
 
 /* --Totaux panier-- */
 
@@ -149,7 +153,7 @@ function totalPanier(products) {
     totalPrix.textContent = prix;
 }
 
-/***** Gestion du formulaire *****/
+/* --  Gestion du formulaire -- */
 
 // class Contact {
 //     constructor() {
@@ -282,9 +286,9 @@ let boutonCommander = document.querySelector('#order');
 
 boutonCommander.addEventListener('click', (e) => {
 
-    e.preventDefault;
-    let formulaire = document.querySelector('.cart__order__form');
-    formulaire.setAttribute('method', 'post');
+    e.preventDefault();
+    //let formulaire = document.querySelector('.cart__order__form');
+    //formulaire.setAttribute('method', 'post');
 
     if (prenomMessage.textContent == '' &
         nomMessage.textContent == '' &
@@ -312,6 +316,7 @@ boutonCommander.addEventListener('click', (e) => {
             window.location = 'confirmation.html?orderId=' + orderId;
         });
     } else {
-            alert("Un champs du formulaire n'est pas valide")
+        alert("Un champs du formulaire n'est pas valide");
     }
 });
+
