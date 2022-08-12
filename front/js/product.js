@@ -78,11 +78,13 @@ a.addEventListener('click', () => {
     console.log("ecoute");
     // On vérifie que la couleur est saisie par l'utilisateur
     if (produit.couleurProduit == "") {
-        alert("Merci de saisir une couleur")
+        alert("Merci de saisir une couleur");
+        return
     }
     // On vérifie que la quantité saisie par l'utilisateur n'est pas 0
     if (produit.quantiteProduit == 0) {
         alert("La quantité doit être comprise entre 1 et 100");
+        return
     }
     // On lit le contenu du LocalStorage
     let contenuStorage = JSON.parse(localStorage.getItem("produit"));
@@ -98,39 +100,55 @@ a.addEventListener('click', () => {
         contenuStorage = JSON.parse(localStorage.getItem("produit"));
     } else {
         console.log("quelque chose dans le panier");
-        for (let i = 0 ; i < contenuStorage.length ; i++) {
-            if(contenuStorage[i].idProduit == produit.idProduit
-            & contenuStorage[i].couleurProduit == produit.couleurProduit) {
-                return (
-                console.log("même id même couleur"),
-                console.log("Ajouter quantité"),
-                contenuStorage[i].quantiteProduit += produit.quantiteProduit,
-                localStorage.setItem("produit", JSON.stringify(contenuStorage)),
-                contenuStorage = JSON.parse(localStorage.getItem("produit")));
-            }
-        } 
-        for (let i = 0 ; i < contenuStorage.length ; i++) {
-            if(contenuStorage[i].idProduit == produit.idProduit & 
-            contenuStorage[i].couleurProduit != produit.couleurProduit) {
-                return (
-                console.log("même id et couleur différente"),
-                console.log("Ajouter une ligne au panier"),
-                contenuStorage.push(produit),
-                localStorage.setItem("produit", JSON.stringify(contenuStorage)),
-                contenuStorage = JSON.parse(localStorage.getItem("produit")),
-                console.log(i));
-            }
-        }  
-        for (let i = 0; i < contenuStorage.length; i++) {
-            if(contenuStorage[i].idProduit != produit.idProduit) {
-                return (
-                    console.log("id différent"),
-                    console.log("Ajouter une ligne au panier"),
-                    contenuStorage.push(produit),
-                    localStorage.setItem("produit", JSON.stringify(contenuStorage)),
-                    contenuStorage = JSON.parse(localStorage.getItem("produit")));
-            }
-        }       
+        // On cherche dans le panier un élément identique et on retourne son index
+        const found = contenuStorage.findIndex(function(element) {
+            return  element.idProduit == produit.idProduit &
+                    element.couleurProduit == produit.couleurProduit
+            });
+        
+        if (found == -1) { // Lorsqu'il n'y a pas d'élément identique
+            contenuStorage.push(produit);
+            localStorage.setItem("produit", JSON.stringify(contenuStorage));
+            contenuStorage = JSON.parse(localStorage.getItem("produit"));
+        } else {
+            contenuStorage[found].quantiteProduit += produit.quantiteProduit;
+            localStorage.setItem("produit", JSON.stringify(contenuStorage)),
+            contenuStorage = JSON.parse(localStorage.getItem("produit"));
+        }
+        // for (let i = 0 ; i < contenuStorage.length ; i++) {
+        //     if(contenuStorage[i].idProduit == produit.idProduit
+        //     & contenuStorage[i].couleurProduit == produit.couleurProduit) {
+        //         return (
+        //         console.log("même id même couleur"),
+        //         console.log("Ajouter quantité"),
+        //         contenuStorage[i].quantiteProduit += produit.quantiteProduit,
+        //         localStorage.setItem("produit", JSON.stringify(contenuStorage)),
+        //         contenuStorage = JSON.parse(localStorage.getItem("produit")));
+        //     }
+        // } 
+        // for (let i = 0 ; i < contenuStorage.length ; i++) {
+        //     if(contenuStorage[i].idProduit == produit.idProduit & 
+        //     contenuStorage[i].couleurProduit != produit.couleurProduit) {
+        //         return (
+        //         console.log("même id et couleur différente"),
+        //         console.log("Ajouter une ligne au panier"),
+        //         contenuStorage.push(produit),
+        //         localStorage.setItem("produit", JSON.stringify(contenuStorage)),
+        //         contenuStorage = JSON.parse(localStorage.getItem("produit")),
+        //         console.log(i));
+        //     }
+        // }  
+        // for (let i = 0; i < contenuStorage.length; i++) {
+        //     if(contenuStorage[i].idProduit != produit.idProduit) {
+        //         return (
+        //             console.log("id différent"),
+        //             console.log("Ajouter une ligne au panier"),
+        //             contenuStorage.push(produit),
+        //             localStorage.setItem("produit", JSON.stringify(contenuStorage)),
+        //             contenuStorage = JSON.parse(localStorage.getItem("produit")));
+        //     }
+        // }
+
     } 
            
 });

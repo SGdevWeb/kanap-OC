@@ -1,17 +1,15 @@
 /* --On récupère le panier dans le storage */
 
 let produits = JSON.parse(localStorage.getItem("produit"));
-console.log(produits);
+//console.log(produits);
 let virtualProducts = JSON.parse(localStorage.getItem("produit"));
 
 /* -- Affichage du panier sur la page -- */
 if (produits) {
-    let total = 0;
-    let prix = 0;
     // Affiche un tableau récapitulatif uniquement si des produits sont présents dans le localStorage
     for (let i in produits) {
         // console.log(produits[i]);
-        //console.log(produits[i].idProduit);
+        // console.log(produits[i].idProduit);
         let items = document.querySelector("#cart__items");
 
         let template = `
@@ -105,23 +103,21 @@ if (produits) {
                 console.log(JSON.parse(localStorage.getItem("produit")));
                 if (confirm("Etes-vous sûr de vouloir supprimer ce produit de votre panier ?")) {
                     
-                    //let id = e.target.closest('.cart__item').dataset.id;
-                    console.log(JSON.parse(localStorage.getItem("produit")));
                     let produits = JSON.parse(localStorage.getItem("produit"));
                     produits = produits.filter(function (produit) { 
-                        return produit != produits[i]
-                    })
-                    virtualProducts = produits.filter(function (produit) { 
-                        return produit != produits[i]
-                    })
+                        return produit !== produits[i]
+                    });
+                    virtualProducts = virtualProducts.filter(function (produit) { 
+                        return produit !== virtualProducts[i]
+                    });
                     //console.log(produits);
                     localStorage.setItem("produit", JSON.stringify(produits));
-                    totalPanier(virtualProducts);
                     //produits = JSON.parse(localStorage.getItem("produit"));
                     let cartItem = e.target.closest('.cart__item');
                     cartItem.remove();
                     panierVide();
                     setTimeout("alert('Produit supprimé du panier')", 500);
+                    totalPanier(virtualProducts);
                 }       
             });
         });
@@ -152,6 +148,7 @@ function totalPanier(products) {
     totalArticle.textContent = articles;
     totalPrix.textContent = prix;
 }
+
 
 /* --  Gestion du formulaire -- */
 
@@ -189,12 +186,6 @@ let adresseMessage = document.getElementById('addressErrorMsg');
 let villeMessage = document.getElementById('cityErrorMsg');
 let emailMessage = document.getElementById('emailErrorMsg');
 
-// function ecoute(cible) {
-//     cible.addEventListener('input', (e) => {
-//         let valeurSaisie = e.target.value;
-//         contact.firstName = valeurSaisie;
-//     })
-// }
 
 function validationEmail(valueInput) {
     if ((/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(valueInput)) {
@@ -204,11 +195,19 @@ function validationEmail(valueInput) {
     }
 }
 
+function validationText(valueInput) {
+    if ((/^[a-zA-Z-]{3,20}$/).test(valueInput)) {
+        return true
+    } else {
+        return false
+    }
+}
+
 prenom.addEventListener('input', (e) => {
     let valeurSaisie = e.target.value;
     console.log(valeurSaisie);
-    if (valeurSaisie.match(/^[a-zA-Z]{3,20}$/g)) {
-        console.log("match");
+    if (validationText(valeurSaisie)) {
+        console.log("bon");
         prenomMessage.textContent = '';
     } else {
         console.log("pas bon");
@@ -220,8 +219,8 @@ prenom.addEventListener('input', (e) => {
 nom.addEventListener('input', (e) => {
     let valeurSaisie = e.target.value;
     console.log(valeurSaisie);
-    if (valeurSaisie.match(/^[a-zA-Z]{3,20}$/g)) {
-        console.log("match");
+    if (validationText(valeurSaisie)) {
+        console.log("bon");
         nomMessage.textContent = '';
     } else {
         console.log("pas bon");
@@ -233,8 +232,8 @@ nom.addEventListener('input', (e) => {
 adresse.addEventListener('input', (e) => {
     let valeurSaisie = e.target.value;
     console.log(valeurSaisie);
-    if (valeurSaisie.match(/^[a-zA-Z0-9\s,.'-]{3,}$/)) {
-        console.log("match");
+    if ((/^[a-zA-Z0-9\s,.'-]{3,}$/).test(valeurSaisie)) {
+        console.log("bon");
         adresseMessage.textContent = '';
     } else {
         console.log("pas bon");
@@ -246,8 +245,8 @@ adresse.addEventListener('input', (e) => {
 ville.addEventListener('input', (e) => {
     let valeurSaisie = e.target.value;
     console.log(valeurSaisie);
-    if (valeurSaisie.match(/^[a-zA-Z-]{3,20}$/g)) {
-        console.log("match");
+    if (validationText) {
+        console.log("bon");
         villeMessage.textContent = '';
     } else {
         console.log("pas bon");
@@ -271,7 +270,9 @@ email.addEventListener('input', (e) => {
     contact.email = valeurSaisie;
 });
 
-// Récupération des produits dans le panier
+
+
+// Récupération des produits dans le panier pour passer la commande
 
 let products = [];
 
@@ -294,10 +295,12 @@ boutonCommander.addEventListener('click', (e) => {
         nomMessage.textContent == '' &
         adresseMessage.textContent == '' &
         villeMessage.textContent == '' &
-        emailMessage.textContent == '') {
-
-        //const products = ['8906dfda133f4c20a9d0e34f18adcf06'];
-        //console.log(products);
+        emailMessage.textContent == '' &
+        prenom.value != '' &
+        nom.value != '' &
+        adresse.value != '' &
+        ville.value != '' &
+        email.value != '') {
 
         console.log(JSON.stringify({contact, products}));
 
@@ -316,7 +319,7 @@ boutonCommander.addEventListener('click', (e) => {
             window.location = 'confirmation.html?orderId=' + orderId;
         });
     } else {
-        alert("Un champs du formulaire n'est pas valide");
+        alert("Un champ du formulaire n'est pas valide");
     }
 });
 
