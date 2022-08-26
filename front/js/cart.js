@@ -1,168 +1,162 @@
-/* --On récupère le panier dans le storage */
+/* -- On récupère le panier dans le localstorage -- */
 
-let produits = JSON.parse(localStorage.getItem("produit"));
-//console.log(produits);
-let virtualProducts = JSON.parse(localStorage.getItem("produit"));
+let cart = JSON.parse(localStorage.getItem("cart"));
 
-/* -- Affichage du panier sur la page -- */
-if (produits) {
-    // Affiche un tableau récapitulatif uniquement si des produits sont présents dans le localStorage
-    for (let i in produits) {
-        // console.log(produits[i]);
-        // console.log(produits[i].idProduit);
-        let items = document.querySelector("#cart__items");
+// On copie le localStorage dans un panier en attente
+let virtualCart = JSON.parse(localStorage.getItem("cart"));
 
-        let template = `
-        <article class="cart__item" data-id="${produits[i].idProduit}" data-color="${produits[i].couleurProduit}">
-            <div class="cart__item__img">
-                <img>
-            </div>
-            <div class="cart__item__content">
-                <div class="cart__item__content__description">
-                    
-                </div>
-                <div class="cart__item__content__settings">
-                    <div class="cart__item__content__settings__quantity">
 
-                    </div>
-                    <div class="cart__item__content__settings__delete">
-                        <p class="deleteItem">Supprimer</p>
-                    </div>
-                </div>
-            </div>
-        </article>`;
+/* -- Fonctions -- */
 
-        items.innerHTML += template;
-
+// Affiche le nombre d'article sur les pages du site
+function cartIcon(cart) {
+    let cartNav = document.querySelectorAll('nav li')[1];
+    if (cart.length < 1) {
+        cartNav.innerHTML = 'Panier'
     }
-
-    panierVide();
-    //let virtualProducts = produits; // On copie le Storage dans un panier en attente 
-
-    for (let i in produits) {
-        fetch("http://localhost:3000/api/products/" + produits[i].idProduit)
-        .then(response => response.json())
-        .then(product => {
-            /* --Remplissage du tableau récapitulatif-- */
-            let url = product.imageUrl;
-            let alt = product.altTxt;
-            let nom = product.name;
-            let prixProduit = product.price;
-            
-            virtualProducts[i].price = product.price;
-
-            let img = document.querySelectorAll('.cart__item img')[i];
-            //console.log(img);
-            img.setAttribute('src', url);
-            img.setAttribute('alt', alt);
-
-            let descriptionH2 = document.querySelectorAll('.cart__item__content__description')[i];
-            //console.log(description);
-            descriptionH2.appendChild(document.createElement('h2')).textContent = nom;
-
-            let descriptionP = document.querySelectorAll('.cart__item__content__description')[i];
-            descriptionP.appendChild(document.createElement('p')).textContent = produits[i].couleurProduit;
-            descriptionP.appendChild(document.createElement('p')).textContent = prixProduit + " €";
-
-            let settings = document.querySelectorAll('.cart__item__content__settings__quantity')[i];
-            settings.appendChild(document.createElement('p')).textContent = "Qté : ";
-            let p = document.querySelector('.cart__item__content__settings__quantity p');
-            p.setAttribute('class', 'quantity');
-            let inputElement = document.createElement('input');
-            inputElement.className = "itemQuantity";
-            inputElement.setAttribute('type', 'number');
-            inputElement.setAttribute('name', 'itemQuantity');
-            inputElement.setAttribute('min', '1');
-            inputElement.setAttribute('max', '100');
-            inputElement.setAttribute('value', produits[i].quantiteProduit);
-            settings.appendChild(inputElement);
-            let input = document.querySelectorAll('.itemQuantity')[i];
-
-            totalPanier(virtualProducts);
-
-            /* --Modification du panier--*/
-            input.addEventListener('change', (e) => {
-                let quantiteNouvelle = e.target.value;
-                console.log(quantiteNouvelle);
-                // console.log(e.target);
-                //let idRecap = e.target.closest('.cart__item').dataset.id;
-                //let couleurRecap = e.target.closest('.cart__item').dataset.color;
-                console.log(produits[i].quantiteProduit);
-                
-                produits[i].quantiteProduit = parseInt(quantiteNouvelle);
-                localStorage.setItem("produit", JSON.stringify(produits));
-                virtualProducts[i].quantiteProduit = parseInt(quantiteNouvelle);
-                totalPanier(virtualProducts);
-                
-            });
-
-            /* ——Suppression produit—— */
-            let boutonSupprimer = document.querySelectorAll('.deleteItem')[i];
-
-            boutonSupprimer.addEventListener('click', (e) => {
-                console.log(JSON.parse(localStorage.getItem("produit")));
-                if (confirm("Etes-vous sûr de vouloir supprimer ce produit de votre panier ?")) {
-                    
-                    let produits = JSON.parse(localStorage.getItem("produit"));
-                    produits = produits.filter(function (produit) { 
-                        return produit !== produits[i]
-                    });
-                    virtualProducts = virtualProducts.filter(function (produit) { 
-                        return produit !== virtualProducts[i]
-                    });
-                    //console.log(produits);
-                    localStorage.setItem("produit", JSON.stringify(produits));
-                    //produits = JSON.parse(localStorage.getItem("produit"));
-                    let cartItem = e.target.closest('.cart__item');
-                    cartItem.remove();
-                    panierVide();
-                    setTimeout("alert('Produit supprimé du panier')", 500);
-                    totalPanier(virtualProducts);
-                }       
-            });
-        });
-
+    let items = 0;
+    for (let i in cart) {
+        items += cart[i].quantityProduct;
+        let template = `Panier<span style="position: relative; bottom: 10px; left: 5px; color: #3498db;">${items}</span>`;
+        cartNav.innerHTML = template;
     }
+};
 
-} else {
-    document.querySelector('#cartAndFormContainer h1').textContent = "Panier vide";
-}
+cartIcon(cart);
 
-function panierVide() {
+// Met à jour le total des articles et du prix sur la page 
+function totalCart(cart) {
+    let price = 0;
+    let items = 0;
+    for (let i in cart) {
+        price += cart[i].price * cart[i].quantityProduct;
+        items += cart[i].quantityProduct;
+    }
+    let totalItems = document.querySelector('#totalQuantity');
+    let totalPrice = document.querySelector('#totalPrice');
+    totalItems.textContent = items;
+    totalPrice.textContent = price;
+};
+
+// Affiche "panier vide" sur la page
+function emptyCart() {
     if (document.querySelector('.cart__item') == null) {
         document.querySelector('#cartAndFormContainer h1').textContent = "Panier vide";
+    } else {
+        document.querySelector('#cartAndFormContainer h1').textContent = "Votre panier";
     }
+};
+
+
+/* -- Affichage du panier sur la page -- */
+
+emptyCart();
+
+const displayCart = () => {
+    for (let i in cart) {
+        fetch("http://localhost:3000/api/products/" + cart[i].idProduct)
+            .then(response => response.json())
+            .then(product => {
+                /* --Remplissage du tableau récapitulatif-- */
+
+                virtualCart[i].price = product.price; // On ajoute le prix au panier virtuel
+
+                let items = document.querySelector("#cart__items");
+
+                let template = `
+                            <article class="cart__item" data-id="${cart[i].idProduct}" data-color="${cart[i].colorProduct}">
+                                <div class="cart__item__img">
+                                    <img src="${product.imageUrl}" alt="${product.altTxt}">
+                                </div>
+                                <div class="cart__item__content">
+                                    <div class="cart__item__content__description">
+                                        <h2>${product.name}</h2>
+                                        <p>${cart[i].colorProduct}</p>
+                                        <p>${product.price} €</p>
+                                    </div>
+                                    <div class="cart__item__content__settings">
+                                        <div class="cart__item__content__settings__quantity">
+                                        <p>Qté : </p>
+                                        <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${cart[i].quantityProduct}">
+                                        </div>
+                                        <div class="cart__item__content__settings__delete">
+                                            <p class="deleteItem">Supprimer</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>`;
+
+                items.innerHTML += template;
+
+                totalCart(virtualCart);
+                emptyCart();
+
+                /* --Modification du panier--*/
+
+                let inputs = document.querySelectorAll('.itemQuantity');
+
+                inputs.forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        cart = JSON.parse(localStorage.getItem("cart"));
+                        let newQuantity = e.target.value;
+                        if (newQuantity <= 0 || newQuantity > 100) {
+                            alert("La quantité doit être comprise entre 1 et 100");
+                            return
+                        }
+                        let cartItem = e.target.closest('.cart__item');
+                        cart.forEach(product => {
+                            if (product.idProduct == cartItem.dataset.id &
+                                product.colorProduct == cartItem.dataset.color) {
+                                product.quantityProduct = parseInt(newQuantity)
+                            }
+                        });
+                        localStorage.setItem("cart", JSON.stringify(cart));
+                        virtualCart.forEach(product => {
+                            if (product.idProduct == cartItem.dataset.id &
+                                product.colorProduct == cartItem.dataset.color) {
+                                product.quantityProduct = parseInt(newQuantity)
+                            }
+                        });
+                        totalCart(virtualCart);
+                        cartIcon(virtualCart);
+                    });
+                });
+
+                /* ——Suppression produit—— */
+
+                let deleteButton = document.querySelectorAll('.deleteItem');
+
+                deleteButton.forEach(element => {
+                    element.addEventListener('click', (e) => {
+                        if (confirm("Etes-vous sûr de vouloir supprimer ce produit de votre panier ?")) {
+                            cart = JSON.parse(localStorage.getItem("cart"));
+                            let cartItem = e.target.closest('.cart__item');
+                            cart = cart.filter(function (product) {
+                                console.log(product);
+                                return product.idProduct + product.colorProduct !== cartItem.dataset.id + cartItem.dataset.color
+                            });
+                            console.log(cart);
+                            virtualCart = virtualCart.filter(function (product) {
+                                console.log(product);
+                                return product.idProduct + product.colorProduct !== cartItem.dataset.id + cartItem.dataset.color
+                            });
+                            localStorage.setItem("cart", JSON.stringify(cart));
+                            cartItem.remove();
+                            emptyCart();
+                            alert('Produit supprimé du panier');
+                            totalCart(virtualCart);
+                            cartIcon(virtualCart);
+                        }
+                    });
+                });
+            });
+    };
 }
 
-/* --Totaux panier-- */
-
-function totalPanier(products) {
-    let prix = 0;
-    let articles = 0;
-    for ( let i in products) {
-        prix += products[i].price * products[i].quantiteProduit;
-        articles += products[i].quantiteProduit;
-    }
-    let totalArticle = document.querySelector('#totalQuantity');
-    let totalPrix = document.querySelector('#totalPrice');
-    totalArticle.textContent = articles;
-    totalPrix.textContent = prix;
-}
+displayCart();
 
 
 /* --  Gestion du formulaire -- */
-
-// class Contact {
-//     constructor() {
-//         this.firstName = document.querySelector('#firstName').value;
-//         this.lastName = document.querySelector('#lastName').value;
-//         this.address = document.querySelector('#address').value;
-//         this.city = document.querySelector('#city').value;
-//         this.email = document.querySelector('#email').value;
-//     }
-// }
-
-//let contact = new Contact;
 
 // Récupération du formulaire saisie par l'utilisateur
 
@@ -172,18 +166,18 @@ let contact = {
     address: '',
     city: '',
     email: ''
-}
+};
 
-let prenom = document.querySelector('#firstName');
-let nom = document.querySelector('#lastName');
-let adresse = document.querySelector('#address');
-let ville = document.querySelector('#city');
+let firstName = document.querySelector('#firstName');
+let lastName = document.querySelector('#lastName');
+let address = document.querySelector('#address');
+let city = document.querySelector('#city');
 let email = document.querySelector('#email');
 
-let prenomMessage = document.getElementById('firstNameErrorMsg');
-let nomMessage = document.getElementById('lastNameErrorMsg');
-let adresseMessage = document.getElementById('addressErrorMsg');
-let villeMessage = document.getElementById('cityErrorMsg');
+let firstNameMessage = document.getElementById('firstNameErrorMsg');
+let lastNameMessage = document.getElementById('lastNameErrorMsg');
+let addressMessage = document.getElementById('addressErrorMsg');
+let cityMessage = document.getElementById('cityErrorMsg');
 let emailMessage = document.getElementById('emailErrorMsg');
 
 
@@ -193,133 +187,127 @@ function validationEmail(valueInput) {
     } else {
         return false
     }
-}
+};
 
 function validationText(valueInput) {
-    if ((/^[a-zA-Z-]{3,20}$/).test(valueInput)) {
+    if ((/^[a-zA-Z-]{2,20}$/).test(valueInput)) {
         return true
     } else {
         return false
     }
-}
+};
 
-prenom.addEventListener('input', (e) => {
-    let valeurSaisie = e.target.value;
-    console.log(valeurSaisie);
-    if (validationText(valeurSaisie)) {
-        console.log("bon");
-        prenomMessage.textContent = '';
+function validationAdress(valueInput) {
+    if ((/^[a-zA-Z0-9\s,.'-]{3,}$/).test(valueInput)) {
+        return true
     } else {
-        console.log("pas bon");
-        prenomMessage.textContent = "Merci de saisir un prénom entre 3 et 20 caractères";
+        return false
     }
-    contact.firstName = valeurSaisie;
+};
+
+firstName.addEventListener('input', (e) => {
+    let valueInput = e.target.value;
+    if (validationText(valueInput)) {
+        firstNameMessage.textContent = '';
+    } else {
+        firstNameMessage.textContent = "Merci de saisir un prénom entre 2 et 20 caractères";
+    }
+    contact.firstName = valueInput;
 });
 
-nom.addEventListener('input', (e) => {
-    let valeurSaisie = e.target.value;
-    console.log(valeurSaisie);
-    if (validationText(valeurSaisie)) {
-        console.log("bon");
-        nomMessage.textContent = '';
+lastName.addEventListener('input', (e) => {
+    let valueInput = e.target.value;
+    if (validationText(valueInput)) {
+        lastNameMessage.textContent = '';
     } else {
-        console.log("pas bon");
-        nomMessage.textContent = "Merci de saisir un nom entre 3 et 20 caractères";
+        lastNameMessage.textContent = "Merci de saisir un nom entre 2 et 20 caractères";
     }
-    contact.lastName = valeurSaisie;
+    contact.lastName = valueInput;
 });
 
-adresse.addEventListener('input', (e) => {
-    let valeurSaisie = e.target.value;
-    console.log(valeurSaisie);
-    if ((/^[a-zA-Z0-9\s,.'-]{3,}$/).test(valeurSaisie)) {
-        console.log("bon");
-        adresseMessage.textContent = '';
+address.addEventListener('input', (e) => {
+    let valueInput = e.target.value;
+    if (validationAdress(valueInput)) {
+        addressMessage.textContent = '';
     } else {
-        console.log("pas bon");
-        adresseMessage.textContent = "Merci de saisir une adresse entre 3 et 60 caractères";
+        addressMessage.textContent = "Merci de saisir une adresse entre 3 et 60 caractères";
     }
-    contact.address = valeurSaisie;
+    contact.address = valueInput;
 });
 
-ville.addEventListener('input', (e) => {
-    let valeurSaisie = e.target.value;
-    console.log(valeurSaisie);
+city.addEventListener('input', (e) => {
+    let valueInput = e.target.value;
     if (validationText) {
-        console.log("bon");
-        villeMessage.textContent = '';
+        cityMessage.textContent = '';
     } else {
-        console.log("pas bon");
-        villeMessage.textContent = "Merci de saisir une ville entre 3 et 20 caractères";
+        cityMessage.textContent = "Merci de saisir une ville entre 3 et 20 caractères";
     }
-    contact.city = valeurSaisie;
+    contact.city = valueInput;
 });
 
 email.addEventListener('input', (e) => {
-    let valeurSaisie = e.target.value;
-    contact.email = valeurSaisie;
-    validationEmail(valeurSaisie);
-    console.log(validationEmail(valeurSaisie));
-    if (validationEmail(valeurSaisie)) {
-        console.log("le mail est correct");
+    let valueInput = e.target.value;
+    contact.email = valueInput;
+    validationEmail(valueInput);
+    if (validationEmail(valueInput)) {
         emailMessage.textContent = '';
     } else {
-        console.log("pas bon");
         emailMessage.textContent = "Merci de saisir une adresse mail valide";
     }
-    contact.email = valeurSaisie;
+    contact.email = valueInput;
 });
-
-
 
 // Récupération des produits dans le panier pour passer la commande
 
 let products = [];
 
-for (let i in produits) {
-    products.push(produits[i].idProduit);
-    console.log(products);
+for (let i in cart) {
+    products.push(cart[i].idProduct);
 }
+
 
 /* -- Envoi du formulaire --*/
 
-let boutonCommander = document.querySelector('#order');
+let orderButton = document.querySelector('#order');
 
-boutonCommander.addEventListener('click', (e) => {
+orderButton.addEventListener('click', (e) => {
 
     e.preventDefault();
     //let formulaire = document.querySelector('.cart__order__form');
     //formulaire.setAttribute('method', 'post');
-
-    if (prenomMessage.textContent == '' &
-        nomMessage.textContent == '' &
-        adresseMessage.textContent == '' &
-        villeMessage.textContent == '' &
-        emailMessage.textContent == '' &
-        prenom.value != '' &
-        nom.value != '' &
-        adresse.value != '' &
-        ville.value != '' &
-        email.value != '') {
-
-        console.log(JSON.stringify({contact, products}));
-
-        fetch("http://localhost:3000/api/products/order", {
-        method: 'POST',
-        headers: {
-        "Accept": 'application/json',
-        "Content-Type": 'application/json',
-        },
-        body: JSON.stringify({contact, products})
-        })
-        .then(response => response.json())
-        .then(data => {
-            let orderId = data.orderId;
-            //console.log(orderId);
-            window.location = 'confirmation.html?orderId=' + orderId;
-        });
+    if (document.querySelector('.cart__item') == null) {
+        alert('Votre panier est vide')
     } else {
-        alert("Un champ du formulaire n'est pas valide");
+        if (firstNameMessage.textContent == '' &
+            lastNameMessage.textContent == '' &
+            addressMessage.textContent == '' &
+            cityMessage.textContent == '' &
+            emailMessage.textContent == '' &
+            contact.firstName != '' &
+            contact.lastName != '' &
+            contact.address != '' &
+            contact.city != '' &
+            contact.email != '') {
+
+            // console.log(JSON.stringify({ contact, products }));
+
+            fetch("http://localhost:3000/api/products/order", {
+                method: 'POST',
+                headers: {
+                    "Accept": 'application/json',
+                    "Content-Type": 'application/json',
+                },
+                body: JSON.stringify({ contact, products })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    //console.log(data);
+                    let orderId = data.orderId;
+                    //console.log(orderId);
+                    window.location = 'confirmation.html?orderId=' + orderId;
+                });
+        } else {
+            alert("Un champ du formulaire n'est pas valide");
+        }
     }
 });
-
