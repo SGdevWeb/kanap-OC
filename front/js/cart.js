@@ -11,8 +11,8 @@ let virtualCart = JSON.parse(localStorage.getItem("cart"));
 // Affiche le nombre d'article sur les pages du site
 function cartIcon(cart) {
     let cartNav = document.querySelectorAll('nav li')[1];
-    if (cart.length < 1) {
-        cartNav.innerHTML = 'Panier'
+    if (cart == null || cart.length == 0) {
+        cartNav.textContent = 'Panier'
     }
     let items = 0;
     for (let i in cart) {
@@ -57,6 +57,7 @@ const displayCart = () => {
         fetch("http://localhost:3000/api/products/" + cart[i].idProduct)
             .then(response => response.json())
             .then(product => {
+
                 /* --Remplissage du tableau récapitulatif-- */
 
                 virtualCart[i].price = product.price; // On ajoute le prix au panier virtuel
@@ -132,12 +133,9 @@ const displayCart = () => {
                             cart = JSON.parse(localStorage.getItem("cart"));
                             let cartItem = e.target.closest('.cart__item');
                             cart = cart.filter(function (product) {
-                                console.log(product);
                                 return product.idProduct + product.colorProduct !== cartItem.dataset.id + cartItem.dataset.color
                             });
-                            console.log(cart);
                             virtualCart = virtualCart.filter(function (product) {
-                                console.log(product);
                                 return product.idProduct + product.colorProduct !== cartItem.dataset.id + cartItem.dataset.color
                             });
                             localStorage.setItem("cart", JSON.stringify(cart));
@@ -210,7 +208,7 @@ firstName.addEventListener('input', (e) => {
     if (validationText(valueInput)) {
         firstNameMessage.textContent = '';
     } else {
-        firstNameMessage.textContent = "Merci de saisir un prénom entre 2 et 20 caractères";
+        firstNameMessage.textContent = "Le prénom doit contenir uniquement des lettres entre 2 et 20 caractères";
     }
     contact.firstName = valueInput;
 });
@@ -220,7 +218,7 @@ lastName.addEventListener('input', (e) => {
     if (validationText(valueInput)) {
         lastNameMessage.textContent = '';
     } else {
-        lastNameMessage.textContent = "Merci de saisir un nom entre 2 et 20 caractères";
+        lastNameMessage.textContent = "Le nom doit contenir uniquement des lettres entre 2 et 20 caractères";
     }
     contact.lastName = valueInput;
 });
@@ -230,17 +228,17 @@ address.addEventListener('input', (e) => {
     if (validationAdress(valueInput)) {
         addressMessage.textContent = '';
     } else {
-        addressMessage.textContent = "Merci de saisir une adresse entre 3 et 60 caractères";
+        addressMessage.textContent = "L'adresse doit contenir entre 3 et 60 caractères, sans caractères spéciaux";
     }
     contact.address = valueInput;
 });
 
 city.addEventListener('input', (e) => {
     let valueInput = e.target.value;
-    if (validationText) {
+    if (validationText(valueInput)) {
         cityMessage.textContent = '';
     } else {
-        cityMessage.textContent = "Merci de saisir une ville entre 3 et 20 caractères";
+        cityMessage.textContent = "La ville doit contenir uniquement des lettres entre 2 et 20 caractères";
     }
     contact.city = valueInput;
 });

@@ -3,8 +3,8 @@ const url = 'http://localhost:3000/api/products';
 // Fonction : affiche le nombre d'article sur les pages du site
 function cartIcon(cart) {
     let cartNav = document.querySelectorAll('nav li')[1];
-    if (cart.length < 1) {
-        cartNav.innerHTML = 'Panier'
+    if (cart == null || cart.length == 0) {
+        cartNav.textContent = 'Panier'
     }
     let items = 0;
     for (let i in cart) {

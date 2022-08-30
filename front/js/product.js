@@ -12,8 +12,8 @@ const urlApi = 'http://localhost:3000/api/products/' + id;
 // Affiche le nombre d'article sur les pages du site
 function cartIcon(cart) {
     let cartNav = document.querySelectorAll('nav li')[1];
-    if (cart == null || cart == []) {
-        cartNav.innerHTML = 'Panier'
+    if (cart == null || cart.length == 0) {
+        cartNav.textContent = 'Panier'
     }
     let items = 0;
     for (let i in cart) {
@@ -23,7 +23,7 @@ function cartIcon(cart) {
     }
 };
 
-// Affiche un message à l'ajout d'un produit dans la panier
+// Affiche un message à l'ajout d'un produit dans le panier
 function messageAddToCart() {
     let productName = document.title;
     alert("Le produit " + productName + " a bien été ajouté dans le panier");
@@ -49,15 +49,15 @@ async function displayProduct() {
         document.querySelector('.item__img').appendChild(img);
         // Ajout du titre
         document.querySelector('#title').textContent = product.name;
-        //Ajout du prix
+        // Ajout du prix
         document.querySelector('#price').textContent = product.price;
-        //Ajout de la description
+        // Ajout de la description
         document.querySelector('#description').textContent = product.description;
-        //ajout des couleurs
-        product.colors.forEach(colors => {
+        // Ajout des couleurs
+        product.colors.forEach(color => {
             let option = document.createElement('option');
-            option.setAttribute('value', colors)
-            document.querySelector('#colors').appendChild(option).textContent = colors;
+            option.setAttribute('value', color)
+            document.querySelector('#colors').appendChild(option).textContent = color;
         });
         document.title = product.name;
     }
@@ -68,6 +68,7 @@ displayProduct();
 let cart = JSON.parse(localStorage.getItem("cart"));
 
 cartIcon(cart);
+
 
 /* -- Création du tableau avec le nouveau produit à ajouter dans le panier -- */
 
@@ -97,7 +98,6 @@ quantity.addEventListener("input", function (e) {
 /* -- Ajouter un produit dans le panier -- */
 
 let linkAddToCart = document.querySelector("#addToCart");
-//let cart = JSON.parse(localStorage.getItem("produit"));
 
 linkAddToCart.addEventListener('click', () => {
     // On vérifie que la couleur est saisie par l'utilisateur
@@ -122,26 +122,23 @@ linkAddToCart.addEventListener('click', () => {
         messageAddToCart();
         cart.push(newProduct);
         localStorage.setItem("cart", JSON.stringify(cart));
-        //cart = JSON.parse(localStorage.getItem("cart"));
         cartIcon(cart);
     } else {
         //console.log("quelque chose dans le panier");
         messageAddToCart();
         // On cherche dans le panier un élément identique et on retourne son index
-        const found = cart.findIndex(function (element) {
-            return element.idProduct == newProduct.idProduct &
+        const index = cart.findIndex(function (element) {
+            return element.idProduct == newProduct.idProduct &&
                 element.colorProduct == newProduct.colorProduct
         });
 
-        if (found == -1) { // Lorsqu'il n'y a pas d'élément identique
+        if (index == -1) { // Lorsqu'il n'y a pas d'élément identique
             cart.push(newProduct);
             localStorage.setItem("cart", JSON.stringify(cart));
-            //cart = JSON.parse(localStorage.getItem("cart"));
             cartIcon(cart);
         } else {
-            cart[found].quantityProduct += newProduct.quantityProduct;
+            cart[index].quantityProduct += newProduct.quantityProduct;
             localStorage.setItem("cart", JSON.stringify(cart));
-            //cart = JSON.parse(localStorage.getItem("cart"));
             cartIcon(cart);
         }
     }
