@@ -4,7 +4,7 @@ let urlOfThePage = window.location.href;
 let url = new URL(urlOfThePage);
 let id = url.searchParams.get("id"); // On isole l'id de l'adresse
 
-const urlApi = 'http://localhost:3000/api/products/' + id;
+const urlApi = 'https://kanap-mu.vercel.app/api/products/' + id;
 
 
 /* -- Fonctions -- */

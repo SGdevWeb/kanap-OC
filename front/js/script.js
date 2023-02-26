@@ -1,4 +1,4 @@
-const url = 'http://localhost:3000/api/products';
+const url = 'https://kanap-mu.vercel.app/api/products';
 
 // Fonction : affiche le nombre d'article sur les pages du site
 function cartIcon(cart) {
@@ -22,15 +22,16 @@ async function displayProducts() {
     if (!requete.ok) {
         alert('Un problème est survenu !');
     } else {
+        console.log(requete)
         let products = await requete.json();
-        //console.log(products);
+        console.log(products);
         for (let i = 0; i < products.length; i++) {
             //console.log(products[i].name);
             let items = document.querySelector('#items');
 
             // Création des éléments (balises)
             let a = document.createElement('a');
-            a.setAttribute('href', 'product.html?id=' + products[i]._id);
+            a.setAttribute('href', './html/product.html?id=' + products[i]._id);
 
             let article = document.createElement('article');
 

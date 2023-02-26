@@ -54,7 +54,7 @@ emptyCart();
 
 const displayCart = () => {
     for (let i in cart) {
-        fetch("http://localhost:3000/api/products/" + cart[i].idProduct)
+        fetch("https://kanap-mu.vercel.app/api/products/" + cart[i].idProduct)
             .then(response => response.json())
             .then(product => {
 
