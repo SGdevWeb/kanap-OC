@@ -5,7 +5,7 @@ const productRoutes = require("./routes/product");
 
 const app = express();
 
-const PORT = process.env.PORT || 3002;
+const PORT = 3002;
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -31,5 +31,3 @@ app.use("/api/kanap/products", productRoutes);
 app.listen(PORT, () => {
   console.log(`server started on port ${PORT}`);
 });
-
-module.exports = app;
