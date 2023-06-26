@@ -1,4 +1,4 @@
-const url = "http://samuelgustin.fr:3002/api/kanap/products";
+const url = "http://samuelgustin.fr:3001/api/kanap/products";
 
 // Fonction : affiche le nombre d'article sur les pages du site
 function cartIcon(cart) {
