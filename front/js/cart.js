@@ -54,7 +54,7 @@ emptyCart();
 
 const displayCart = () => {
   for (let i in cart) {
-    fetch("http://samuelgustin.fr:3001/api/kanap/products/" + cart[i].idProduct)
+    fetch("http://samuelgustin.fr:3002/api/kanap/products/" + cart[i].idProduct)
       .then((response) => response.json())
       .then((product) => {
         /* --Remplissage du tableau récapitulatif-- */
@@ -303,7 +303,7 @@ orderButton.addEventListener("click", (e) => {
     ) {
       // console.log(JSON.stringify({ contact, products }));
 
-      fetch("http://samuelgustin.fr:3001/api/kanap/products/order", {
+      fetch("http://samuelgustin.fr:3002/api/kanap/products/order", {
         method: "POST",
         headers: {
           Accept: "application/json",

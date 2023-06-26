@@ -4,7 +4,7 @@ let urlOfThePage = window.location.href;
 let url = new URL(urlOfThePage);
 let id = url.searchParams.get("id"); // On isole l'id de l'adresse
 
-const urlApi = "http://samuelgustin.fr:3001/api/kanap/products/" + id;
+const urlApi = "http://samuelgustin.fr:3002/api/kanap/products/" + id;
 
 /* -- Fonctions -- */
 
